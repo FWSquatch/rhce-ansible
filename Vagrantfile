@@ -4,7 +4,7 @@
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "geerlingguy/centos8"
+  config.vm.box = "geerlingguy/centos8" # Thanks for the great videos github.com/geerlingguy!
   config.ssh.insert_key = false
   config.vm.provider "virtualbox"
 
@@ -14,18 +14,21 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     v.linked_clone = true
   end
 
-  # Define three VMs with static private IP addresses.
+  # Define up to 6 VMs with static private IP addresses.
   boxes = [
-    { :name => "control", :ip => "192.168.88.2" },
+    { :name => "control", :ip => "192.168.88.100" },
     { :name => "node1", :ip => "192.168.88.101" },
     { :name => "node2", :ip => "192.168.88.102" },
     { :name => "node3", :ip => "192.168.88.103" },
+    { :name => "node4", :ip => "192.168.88.104" },
+    { :name => "node5", :ip => "192.168.88.105" },
+
   ]
 
   # Provision each of the VMs.
   boxes.each do |opts|
     config.vm.define opts[:name] do |config|
-      config.vm.hostname = opts[:name] + ".centos8.test"
+      config.vm.hostname = opts[:name] + ".rhce.pract"
       config.vm.network :private_network, ip: opts[:ip]
     end
   end
