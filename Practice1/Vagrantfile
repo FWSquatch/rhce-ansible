@@ -20,15 +20,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     { :name => "node1", :ip => "192.168.88.101" },
     { :name => "node2", :ip => "192.168.88.102" },
     { :name => "node3", :ip => "192.168.88.103" },
-    { :name => "node4", :ip => "192.168.88.104" },
-    { :name => "node5", :ip => "192.168.88.105" },
+ #   { :name => "node4", :ip => "192.168.88.104" },
+ #   { :name => "node5", :ip => "192.168.88.105" },
 
   ]
 
   # Provision each of the VMs.
   boxes.each do |opts|
     config.vm.define opts[:name] do |config|
-      config.vm.hostname = opts[:name] + ".rhce.pract"
+      config.vm.hostname = opts[:name] + ".rhce.lab"
       config.vm.network :private_network, ip: opts[:ip]
     end
   end

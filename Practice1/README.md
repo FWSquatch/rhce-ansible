@@ -16,18 +16,21 @@
     - set privilege escalation to default to not becoming root.
     - set privilege escalation to never ask for a password.
 
-7. Use an adhoc command to create the user `devops` with a UID of 5000 and add him to the `wheel` group.
+7. Use an adhoc command to create the user `devops` with a UID of 5000 and add it to the `wheel` group.
 
-8. Create a `playbooks` folder and in it, create a playbook called `hostnames.yml`. Create plays that:
-    - add the following lines to each `/etc/hosts` file:
+8. Create a `playbooks` folder and in it, create a playbook called `hostnames.yml`. 
+    - Create a play that adds the following lines to each `/etc/hosts` file:
         ```
-        192.168.88.2 control.centos8.test control
-        192.168.88.101 node1.centos8.test node1
-        192.168.88.102 node2.centos8.test node2
-        192.168.88.103 node3.centos8.test node3
+        192.168.88.2 control.rhce.lab control
+        192.168.88.101 node1.rhce.lab node1
+        192.168.88.102 node2.rhce.lab node2
+        192.168.88.103 node3.rhce.lab node3
         ```
-    - adds those same lines to the `/etc/hosts` file on `localhost`.
-    - installs and enables Apache webserver on the `webserver` nodes.
+    - In the same playbook, create another play that adds those same lines to the `/etc/hosts` file on the control node.
+
+9. Create another playbook named `setup.yml` that:
+    - Ensures that the following packages are installed on the `webserver` nodes.: httpd, firewalld, fail2ban.
+    - Ensures that firewalld and apache are enabled and running. 
     - Copies an `index.html` file to the `/var/www/html/` folder on the webservers. The file should contain the following text: 'This is an Apache test page.\n'
     - allows the web traffic through the firewall of each webserver
     - tests each webserver from the localhost to make sure it is accessible.
