@@ -1,6 +1,8 @@
 # RHCE/Ansible Practice materials
 ## Practice Materials for EX294 and/or EX407
 
+This is my collection of practice activities for the EX294 exam. Feel free to use them. I have not taken the exam yet, so I cannot say if any or all of these things will be on it.
+
 ### Prerequisites
 - virtualbox
 - latest version of vagrant (tested on 2.2.9)
