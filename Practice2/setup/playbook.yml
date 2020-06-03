@@ -1,0 +1,38 @@
+---
+- name: Set up environment for Practice 2
+  hosts: all
+  become: true
+  tasks:
+    - name: Set up /etc/hosts
+      blockinfile:
+        path: /etc/hosts
+        block: |
+          192.168.88.100 control.rhce.lab control
+          192.168.88.101 node1.rhce.lab node1
+          192.168.88.102 node2.rhce.lab node2
+          192.168.88.103 node3.rhce.lab node3
+          192.168.88.104 node4.rhce.lab node4
+          192.168.88.105 node5.rhce.lab node5
+
+- name: Ansible Setup
+  hosts: control
+  become: true
+  tasks:
+    - name: Install ansible
+      pip:
+        name: ansible
+        executable: pip3
+
+    - name: Setup ansible.cfg
+      copy:
+        src: ansible.cfg
+        dest: /home/vagrant/ansible.cfg
+
+    - name: Copy inventory file
+      copy:
+        src: inventory
+        dest: /home/vagrant/inventory
+
+    - name: Generate ssh key
+      openssh_keypair:
+        path: /home/vagrant/.ssh/id_rsa

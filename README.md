@@ -7,8 +7,7 @@
 
 ### How to use this repo
 1. Clone into this repo `git clone https://github.com/FWSquatch/rhce-ansible`
-2. Change directory `cd rhce-ansible`
-3. Edit the Vagrantfile if you want more or less nodes.
-4. Fire up the VMs with `vagrant up`
-5. Jump into the control node with `vagrant ssh control`
+2. Change directory `cd rhce-ansible/<PracticeN>` to whichever practice you want to attempt.
+3. Fire up the VMs with `vagrant up`
+4. Jump into the control node with `vagrant ssh control`
 6. Begin working through activities.

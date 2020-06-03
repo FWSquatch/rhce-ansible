@@ -1,0 +1,5 @@
+[webserver]
+node1.rhce.lab
+
+[db]
+node2.rhce.lab

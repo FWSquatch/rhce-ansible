@@ -1,0 +1,27 @@
+---
+- name: Setup hosts file on remote nodes
+  hosts: all
+  tasks:
+    - name: Copy block to /etc/hosts
+      become: true
+      blockinfile:
+        path: /etc/hosts
+        block: |
+          192.168.88.2 control.rhce.lab control
+          192.168.88.101 node1.rhce.lab node1
+          192.168.88.102 node2.rhce.lab node2
+          192.168.88.103 node3.rhce.lab node3
+
+- name: Setup hosts on local machine
+  hosts: localhost
+  tasks:
+    - name: Copy block to /etc/hosts
+      become: true
+      blockinfile:
+        path: /etc/hosts
+        block: |
+          192.168.88.2 control.rhce.lab control
+          192.168.88.101 node1.rhce.lab node1
+          192.168.88.102 node2.rhce.lab node2
+          192.168.88.103 node3.rhce.lab node3
+    

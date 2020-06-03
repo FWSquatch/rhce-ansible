@@ -1,0 +1,63 @@
+---
+- name: Install packages on webserver
+  hosts: webservers
+  become: true
+  tasks:
+    - name: Install latest versions of Apache and firewalld
+      yum:
+        name:
+        - httpd
+        - firewalld
+        state: latest
+
+    - name: Apache is enabled and started
+      service:
+        name: httpd
+        state: started
+        enabled: true
+
+    - name: firewalld is enabled and started
+      service:
+        name: firewalld
+        state: started
+        enabled: true
+
+    - name: Create an index file
+      copy:
+        dest: /var/www/html/index.html
+        content: "This is an Apache Test Page.\n"
+
+    - name: Allow http traffic through FW
+      firewalld:
+        service: http
+        state: enabled
+        permanent: true
+        immediate: true
+
+- name: Install mariadb-server on the db server
+  hosts: db
+  become: true
+  tasks:
+    - name: Install latest maria-db
+      yum:
+        name: mariadb-server
+        state: latest
+
+    - name: Mariadb is up and running
+      service:
+        name: mariadb
+        enabled: true
+        state: started
+
+- name: Test webservers
+  hosts: localhost
+  tasks:
+    - name: check node1
+      uri:
+        url: http://node1.rhce.lab
+        status_code: 200
+
+    - name: check node2
+      uri:
+        url: http://node2.rhce.lab
+        status_code: 200
