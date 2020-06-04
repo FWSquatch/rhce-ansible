@@ -1,4 +1,5 @@
 # RHCE Ansible Practice 2
+## Using variables and facts
 
 \* Username is `vagrant` with a password of `vagrant` if you need it.
 
@@ -17,3 +18,8 @@
 3. Create a playbooks directory with a playbook named setup.yml in it. In the playbook, do the following:
     - Use the following variables:
         
+
+
+        Use variables in the playbook
+        Use ansible vault
+        Use ansible facts - This hostname is running Centos version

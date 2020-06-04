@@ -1,0 +1,5 @@
+[webtest]
+node1.rhce.lab
+
+[webprod]
+node2.rhce.lab

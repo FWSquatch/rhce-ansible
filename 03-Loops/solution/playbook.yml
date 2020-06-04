@@ -1,0 +1,74 @@
+---
+- name: Create users on both machines
+  hosts: choctaw
+  become: true
+  vars_files: vars.yml
+  tasks:
+    - name: Create groups
+      group:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - simpsons
+        - flanders
+        - wiggums
+        - donut_lovers
+    - name: Put the users in the correct groups
+      user:
+        name: "{{ item.uname }}"
+        groups: "{{ item.groups }}"
+        append: true
+      loop: "{{ users }}"
+
+    - name: Create group_dirs
+      file:
+        path: "{{ item['path'] }}"
+        owner: "{{ item['owner'] }}"
+        group: "{{ item['group'] }}"
+        mode: "{{ item['mode'] }}"
+        state: directory
+      loop: "{{ group_dirs }}"
+
+- name: Install stuff on webtest
+  hosts: webtest
+  vars_files: vars.yml
+  become: true
+  tasks:
+    - name: Install "{{ required_packages }}"
+      yum:
+        name: "{{ required_packages }}"
+        state: latest
+
+    - name: Make sure "{{ required_packages }}" are running
+      service:
+        name: "{{ item }}"
+        state: started
+        enabled: true
+      loop: "{{ required_packages }}"
+    - name: Let the stuff through the firewall
+      firewalld:
+        service: "{{ item }}"
+        state: enabled
+        immediate: true
+        permanent: true
+      loop: "{{ firewall_rules }}"
+
+- name: Check on webprod machines
+  hosts: webprod
+  become: true
+  tasks:
+    - name: Look for rod
+      shell: "id rod"
+      register: rod_result
+      ignore_errors: true
+    - name: Make stuff
+      copy:
+        content: "Praise the Lord!"
+        dest: /home/rod/ToddWuzHere.txt
+      when: rod_result.stdout != ""
+    - name: Find version of CentOS
+      debug:
+        msg: >
+          "The server at {{ ansible_facts.default_ipv4.address }} is living
+          in the past with version {{ ansible_facts.distribution_version }}"
+      when: ansible_facts.distribution_version  is version('8.1', '<')

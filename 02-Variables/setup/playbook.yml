@@ -36,3 +36,13 @@
     - name: Generate ssh key
       openssh_keypair:
         path: /home/vagrant/.ssh/id_rsa
+
+    - name: Make vagrant owner of ssh private key
+      file:
+        path: /home/vagrant/.ssh/id_rsa
+        owner: vagrant
+
+    - name: Make vagrant owner of ssh public key
+      file:
+        path: /home/vagrant/.ssh/id_rsa.pub
+        owner: vagrant
