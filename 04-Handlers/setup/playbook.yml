@@ -1,0 +1,54 @@
+---
+- name: Set up environment for Practice 4
+  hosts: all
+  become: true
+  tasks:
+    - name: Set up /etc/hosts
+      blockinfile:
+        path: /etc/hosts
+        block: |
+          192.168.88.100 control.rhce.lab control
+          192.168.88.101 node1.rhce.lab node1
+          192.168.88.102 node2.rhce.lab node2
+          192.168.88.103 node3.rhce.lab node3
+          192.168.88.104 node4.rhce.lab node4
+          192.168.88.105 node5.rhce.lab node5
+
+- name: Ansible Setup
+  hosts: control
+  become: true
+  vars:
+    setup_files:
+      - src: ansible.cfg
+        dest: /home/vagrant/ansible.cfg
+      - src: inventory
+        dest: /home/vagrant/inventory
+      - src: vars.yml
+        dest: /home/vagrant/vars.yml
+      - src: ../files
+        dest: /home/vagrant/files
+  tasks:
+    - name: Install ansible
+      pip:
+        name: ansible
+        executable: pip3
+
+    - name: Copy inventory setup files
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        owner: vagrant
+        group: vagrant
+      loop: "{{ setup_files }}"
+
+    - name: Generate ssh key
+      openssh_keypair:
+        path: /home/vagrant/.ssh/id_rsa
+
+    - name: Make vagrant owner of ssh private and pub key
+      file:
+        path: "{{ item }}"
+        owner: vagrant
+      loop:
+        - /home/vagrant/.ssh/id_rsa
+        - /home/vagrant/.ssh/id_rsa.pub

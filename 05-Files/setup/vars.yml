@@ -1,0 +1,38 @@
+web_pkg: nginx
+web_svc_rule: http
+mail_pkg: postfix
+mail_svc_rule: smtp
+
+users:
+  - {'uname': 'homer', 'groups': 'simpsons, donut_lovers'}
+  - {'uname': 'marge', 'groups': 'simpsons'}
+  - {'uname': 'bart', 'groups': 'simpsons'}
+  - {'uname': 'lisa', 'groups': 'simpsons'}
+  - {'uname': 'ned', 'groups': 'flanders'}
+  - {'uname': 'rod', 'groups': 'flanders'}
+  - {'uname': 'todd', 'groups': 'flanders'}
+  - {'uname': 'chief', 'groups': 'wiggums, donut_lovers'}
+  - {'uname': 'ralph', 'groups': 'wiggums'}
+
+required_packages:
+  - "{{ web_pkg }}"
+  - "{{ mail_pkg }}"
+  - firewalld
+
+firewall_rules:
+  - "{{ web_svc_rule }}"
+  - "{{ mail_svc_rule }}"
+
+group_dirs:
+  - path: /groupdirs/donut_shop_reviews
+    owner: homer
+    group: donut_lovers
+    mode: 0644
+  - path: /groupdirs/bible_verses
+    owner: ned
+    group: flanders
+    mode: 777
+  - path: /groupdirs/police_reports
+    owner: chief
+    group: wiggums
+    mode: 0644

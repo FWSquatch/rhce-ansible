@@ -4,12 +4,12 @@
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "geerlingguy/centos8" # Thanks for the great videos github.com/geerlingguy!
+  config.vm.box = "geerlingguy/centos8" # Check out this guy's stuff! He's great!!
   config.ssh.insert_key = false
   config.vm.provider "virtualbox"
 
   config.vm.provider :virtualbox do |v|
-    v.memory = 1536
+    v.memory = 512
     v.cpus = 1
     v.linked_clone = true
   end
@@ -18,7 +18,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   boxes = [
     { :name => "control", :ip => "192.168.88.100" },
     { :name => "node1", :ip => "192.168.88.101" },
- #   { :name => "node2", :ip => "192.168.88.102" },
+    { :name => "node2", :ip => "192.168.88.102" },
  #   { :name => "node3", :ip => "192.168.88.103" },
  #   { :name => "node4", :ip => "192.168.88.104" },
  #   { :name => "node5", :ip => "192.168.88.105" },
@@ -30,6 +30,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.define opts[:name] do |config|
       config.vm.hostname = opts[:name] + ".rhce.lab"
       config.vm.network :private_network, ip: opts[:ip]
+    end
+  # Provisioning configuration for Ansible.
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "setup/playbook.yml"
     end
   end
 end

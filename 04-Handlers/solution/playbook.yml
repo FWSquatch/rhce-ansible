@@ -1,0 +1,86 @@
+---
+- name: Practice 4 Handlers
+  hosts: webservers
+  vars:
+    web_pkg: httpd
+    firewall_pkg: firewalld
+  vars_files: vars.yml
+  become: true
+  tasks:
+
+    - name: Install webserver and firewall
+      yum:
+        name:
+          - "{{ web_pkg }}"
+          - "{{ firewall_pkg }}"
+        state: latest
+
+    - name: Ensure services are running and enabled
+      service:
+        name: "{{ item }}"
+        state: started
+        enabled: true
+      loop: "{{ app_svcs }}"
+
+    - name: Copy custom configs to remote server
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        force: true
+      loop: "{{ web_svc_config_files }}"
+      notify: Restart httpd
+
+    - name: Add lines to {{ ssh_config_file }}
+      lineinfile:
+        path: "{{ ssh_config_file }}"
+        line: "{{ item }}"
+        state: present
+      loop: "{{ ssh_config }}"
+      notify: Restart sshd
+
+    - name: Remove a line from {{ ssh_config_file }}
+      lineinfile:
+        path: "{{ ssh_config_file }}"
+        line: "PermitRootLogin yes"
+        state: absent
+      notify: Restart sshd
+
+    - name: Allow HTTP through the firewall
+      firewalld:
+        service: http
+        state: enabled
+        immediate: true
+        permanent: true
+
+    - name: Create dynamic index.html file
+      copy:
+        content: >
+          "Welcome to {{ ansible_facts.fqdn }} webserver! All {{ ansible_facts.memtotal_mb }}
+          MBs of memory are working hard to serve this page up to you!"
+        dest: "{{ web_root }}/index.html"
+        force: true
+
+  handlers:
+    - name: Restart httpd
+      service:
+        name: httpd
+        state: restarted
+
+    - name: Restart sshd
+      service:
+        name: sshd
+        state: restarted
+
+- name: Check servers from localhost
+  hosts: localhost
+  become: false
+  vars:
+    web_hosts:
+      - node1.rhce.lab
+      - node2.rhce.lab
+  tasks:
+    - name: Hit each webserver
+      uri:
+        url: "http://{{ item }}"
+        status_code: 200
+      loop: "{{ web_hosts }}"

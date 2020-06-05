@@ -1,35 +1,21 @@
 # RHCE Ansible Practice 4
 ## Handlers
 
+\* Use `ssh-copy-id nodeX` to each node before you get started.
+
 \* Username is `vagrant` with a password of `vagrant` if you need it.
 
-1. Create a playbooks directory with a playbook named setup.yml in it. In the playbook, do the following:
-    - force_handlers
-    - Install httpd
-    - Change ServerTokens and OS signature in httpd.conf or security.conf?
-    - Restart apache IF the file has been changed
-    - Use the command module to see if firewalld is-active. Have it ignore failures. If it is not, it should run the "add http to firewall" and "restart firewalld" handlers
-    - Use the shell module to grep for the user `homer` in /etc/passwd. Have it failed_when there is no result????    tasks:
-  6     - name: Run a script
-  7       shell:
-  8         cmd: "/usr/bin/grep homer /etc/passwd"
-  9       register: output
- 10       changed_when: "'homer' in output.stdout"
- 11       notify:
- 12         - hell yeah
- 13    
- 14   handlers:
- 15     - name: hell yeah
- 16       debug:
- 17         msg: 'YES YES YES'
-
-
-
-    - Create a restart apache handler
-
-
-Error handling
-
-Do a block of 3 with a single conditional.
-
-Block/Rescue/Always
+Use the playbook.yml to do the following:
+1. Create a play for the `webservers` group that uses these local variables:
+  - `web_pkg: httpd`
+  - `firewall_pkg: firewalld`
+2. Create a task to install the two packages using those variables.
+3. Make another task that will use the `app_svcs` variable from `vars.yml` to ensure the services are started and enabled.
+4. Make a task that uses the copy module with the `web_svc_config_files` variable to move the custom configurations to the appserver. This task should trigger the `Restart httpd` handler.
+5. Write a task that uses the `lineinfile` module to add the lines from the `ssh_config` variable to the `ssh_config_file`. This task should trigger the `Restart sshd` handler.
+6. Write another task that takes the line `PermitRootLogin yes` line out of the `ssh_config_file`. This task should also trigger the `Restart sshd` handler.
+7. Create a task that allows normal http traffic through the firewall.
+8. Make a task that creates an `index.html` file. It should:
+  - Use facts to create this dynamic message: "Welcome to (HOSTNAME) webserver! All (AMOUNT OF MEMORY) MBs of memory are working hard to serve this page up to you!"
+  - Be placed in the `web_root` directory
+9. Create another play that uses the localhost to test each webserver for accessability.

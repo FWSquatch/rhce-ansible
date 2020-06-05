@@ -24,9 +24,9 @@
     - In the same playbook, create another play that adds those same lines to the `/etc/hosts` file on the control node.
 
 6. Create another playbook named `setup.yml` that:
-    - Ensures that the following packages are installed on the `webserver` nodes.: httpd and firewalld.
-    - Ensures that firewalld and apache are enabled and running.
+    - Ensures that the following packages are installed on the `webserver` nodes: `httpd` and `firewalld`.
+    - Ensures that the firewall and apache are enabled and running.
     - Copies an `index.html` file to the `/var/www/html/` folder on the webservers. The file should contain the following text: 'This is an Apache test page.\n'
-    - Allows the web traffic through the firewall of each webserver
-    - Ensures that `mariadb-server` is installed on the `db` node and is up and running
+    - Allows the web traffic through the firewall of each webserver.
+    - Ensures that `mariadb-server` is installed on the `db` node and is up and running.
     - Tests each webserver from the localhost to make sure it is accessible.
