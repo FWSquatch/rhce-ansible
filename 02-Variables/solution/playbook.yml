@@ -1,0 +1,113 @@
+---
+# Practice 2
+- name: Create users and groups on all
+  hosts: all
+  vars_files:
+    - vault/secrets.yml
+    - vars.yml
+  become: true
+  tasks:
+
+    - name: Create "{{ web_groups }}"
+      group:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ web_groups }}"
+
+    - name: Create users
+      user:  
+        name: "{{ item.uname }}"
+        comment: "{{ item.comment }}"
+        uid: "{{ item.uid }}"
+        groups: "{{ item.groups }}"
+        append: true
+      loop: "{{ web_users }}"
+  
+    - name: Set hannibal's pw to A-Team
+      user:
+        name: "{{ username }}"
+        password: "{{ pwhash }}"
+        state: present
+  
+- name: Setup the dev server
+  hosts: dev
+  vars_files: vars.yml
+  become: true
+  tasks:
+    
+    - name: Install {{ test_pkgs }} on dev
+      yum:
+        name: "{{ item }}"
+        state: latest
+      loop: "{{ test_pkgs }}"
+
+    - name: Create index.html
+      copy:
+        content: "I love it when a plan comes together"
+        dest: "{{ dev_web_root }}/index.html"
+        
+    - name: Install {{ firewall_pkg }} on dev
+      yum:
+        name: "{{ firewall_pkg }}"
+        state: latest
+
+    - name: Enable and run {{ test_svcs }}
+      service:
+        name: "{{ item }}"
+        enabled: true
+        state: started
+      loop: "{{ test_svcs }}"
+
+    - name: Set up firewall rules for dev
+      firewalld:
+        service: "{{ item }}"
+        state: enabled
+        permanent: true
+        immediate: true
+      loop: "{{ firewall_rules }}"
+
+- name: Setup the prod server
+  hosts: prod
+  vars_files: vars.yml
+  become: true
+  tasks:
+    
+    - name: Install {{ web_pkgs }} on prod
+      yum:
+        name: "{{ item }}"
+        state: latest
+      loop: "{{ web_pkgs }}"
+
+    - name: Create index.html
+      copy:
+        content: "I love it when a plan comes together"
+        dest: "{{ prod_web_root }}/index.html"
+        
+    - name: Enable and run {{ web_svcs}} on prod
+      service:
+        name: "{{ item }}"
+        enabled: true
+        state: started
+      loop: "{{ web_svcs }}"
+
+    - name: Set up firewall rules for prod
+      firewalld:
+        service: "{{ item }}"
+        state: enabled
+        permanent: true
+        immediate: true
+      loop: "{{ firewall_rules }}"
+    
+- name: Check accessability from localhost
+  hosts: localhost
+  vars_files: vars.yml
+  tasks:
+    
+    - name: Hit each index.html page
+      uri:
+        url: "{{ item }}"
+        status_code: 200
+        return_content: true
+      loop:
+        - "http://node1.rhce.lab"
+        - "http://node2.rhce.lab"

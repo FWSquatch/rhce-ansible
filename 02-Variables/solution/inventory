@@ -1,3 +1,5 @@
-[webservers]
-node1
+[dev]
+node1.rhce.lab
 
+[prod]
+node2.rhce.lab
